@@ -1,0 +1,13 @@
+{
+    "Sex must be either 'F' or 'M'": "Пол должен быть либо 'F' либо 'M'",
+    "Whoops! Something went wrong.": "Упс! Что-то пошло не так.",
+    "Name": "Имя",
+    "Age": "Возраст",
+    "Sex": "Пол",
+    "Password": "Пароль",
+    "Confirm Password": "Подтвердите пароль",
+    "Register": "Зарегистрироваться",
+    "Already registered?": "Уже зарегистрированы?",
+    "Female": "Женский",
+    "Male": "Мужской"
+}
