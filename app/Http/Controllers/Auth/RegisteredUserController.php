@@ -50,12 +50,14 @@ class RegisteredUserController extends Controller
             ]);
         }
 
+        $defaultRole = Role::where('name', 'manager')->first();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'age' => (int) $request->age,
             'sex' => $request->sex,
-            'role_id' => Role::where('name', 'manager')->first()->id,
+            'role_id' => $defaultRole->id,
             'password' => Hash::make($request->password),
         ]);
 
