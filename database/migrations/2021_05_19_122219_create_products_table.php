@@ -22,6 +22,9 @@ class CreateProductsTable extends Migration
                 Storage::url('product-images/default.png')
             );
             $table->unsignedFloat('price');
+            $table->unsignedBigInteger('available_count');
+            $table->boolean('active');
+            $table->timestamp('active_since');
             $table->timestamps();
         });
     }
