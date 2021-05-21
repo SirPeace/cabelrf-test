@@ -17,6 +17,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/users', function () {
+        return view('users');
+    })->name('users');
+
+    Route::get('/products', function () {
+        return view('products');
+    })->name('products');
 });
 
 require __DIR__ . '/auth.php';
