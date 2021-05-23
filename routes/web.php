@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,13 +20,9 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/users', function () {
-        return view('users');
-    })->name('users');
+    Route::resource('users', UserController::class);
 
-    Route::get('/products', function () {
-        return view('products');
-    })->name('products');
+    Route::resource('products', ProductController::class);
 });
 
 require __DIR__ . '/auth.php';

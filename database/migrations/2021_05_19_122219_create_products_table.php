@@ -16,16 +16,21 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('status_id');
             $table->string('title');
-            $table->string('description');
+            $table->string('slug');
+            $table->text('description');
             $table->string('thumbnail_url')->default(
                 Storage::url('product-images/default.png')
             );
             $table->unsignedFloat('price');
-            $table->unsignedBigInteger('available_count');
-            $table->boolean('active');
-            $table->timestamp('active_since');
+            $table->unsignedInteger('available_count');
+            $table->timestamp('last_status_change')->default(now());
             $table->timestamps();
+
+            $table->foreign('status_id')
+                ->references('id')
+                ->on('product_statuses');
         });
     }
 

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             'sex' => 'M'
         ]);
 
+        (new ProductStatusSeeder)->run();
         (new ProductSeeder)->run();
     }
 }
