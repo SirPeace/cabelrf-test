@@ -21,6 +21,6 @@
         "tailwindcss": "^2.0.2"
     },
     "dependencies": {
-        "dropzone": "^5.9.2"
+        "filesize": "^6.3.0"
     }
 }

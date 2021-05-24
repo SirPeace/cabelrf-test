@@ -2,24 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\ProductUpdateRequest;
 use App\Models\ProductStatus;
-use Exception;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     *e
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::paginate(20);
+        $params = $request->only(['orderBy', 'order']);
+
+        $params['order'] = $params['order'] ?? null;
+        $params['orderBy'] = $params['orderBy'] ?? null;
+
+        ['orderBy' => $orderBy, 'order' => $order] = $params;
+
+        $products = Product::with(['status'])
+            ->when(
+                $orderBy,
+                function ($query) use ($orderBy, $order) {
+                    if ($orderBy === 'id') {
+                        return $order === 'desc'
+                            ? $query->orderByDesc('id')
+                            : $query->orderBy('id');
+                    }
+                    if ($orderBy === 'status') {
+                        return $order === 'desc'
+                            ? $query->orderByDesc('status_id')
+                            : $query->orderBy('status_id');
+                    }
+                    if ($orderBy === 'title') {
+                        return $order === 'desc'
+                            ? $query->orderByDesc('title')
+                            : $query->orderBy('title');
+                    }
+                    if ($orderBy === 'price') {
+                        return $order === 'desc'
+                            ? $query->orderByDesc('price')
+                            : $query->orderBy('price');
+                    }
+                    if ($orderBy === 'available_count') {
+                        return $order === 'desc'
+                            ? $query->orderByDesc('available_count')
+                            : $query->orderBy('available_count');
+                    }
+                    return $query->orderByDesc('id');
+                }
+            )
+            ->paginate(20);
 
         return view('products.index', compact('products'));
     }
@@ -39,12 +78,42 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\ProductStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
-        //
+        $fields = $request->all([
+            'title',
+            'description',
+            'price',
+            'status_id',
+            'available_count',
+        ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $fields['thumbnail_path'] = $request
+                ->file('thumbnail')
+                ->store('public/product-images');
+        }
+
+        if ($request->slug) {
+            $request->validate([
+                'slug' => 'unique:App\Models\Product,slug'
+            ]);
+
+            $fields['slug'] = urlencode($request->slug);
+        }
+
+        $isCreated = Product::create($fields);
+
+        if (!$isCreated) {
+            throw new \Exception('Product was not created');
+        }
+
+        return redirect()
+            ->route('products.index')
+            ->with('product.create_status', 'success');
     }
 
     /**
@@ -93,12 +162,9 @@ class ProductController extends Controller
         }
 
         if ($request->slug !== $product->slug) {
-            $validator = Validator::make(
-                ['slug' => $request->slug],
-                ['slug' => 'unique:\App\Models\Product,slug']
-            );
-
-            $validator->validate($product->slug);
+            $request->validate([
+                'slug' => 'unique:\App\Models\Product,slug'
+            ]);
 
             $product->update(['slug' => urlencode($request->slug)]);
         }
@@ -110,10 +176,14 @@ class ProductController extends Controller
                 throw new Exception('Thumbnail was not stored');
             }
 
-            $product->update(['thumbnail_path' => $path]);e
+            if ($product->thumbnail_path !== 'public/product-images/default.png') {
+                Storage::delete($product->thumbnail_path);
+            }
+
+            $product->update(['thumbnail_path' => $path]);
         }
 
-        return back()->with('status', 'success');
+        return back()->with('product.update_status', 'success');
     }
 
     /**
@@ -124,17 +194,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        dd('Delete', $product);
-    }
+        if ($product->thumbnail_path !== 'public/product-images/default.png') {
+            Storage::delete($product->thumbnail_path);
+        }
 
-    /**
-     * Upload product thumbnail (via AJAX)
-     *
-     * @param \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function uploadThumbnail(Request $request)
-    {
-        dd($request->file('file'));
+        $product->delete();
+
+        return redirect()
+            ->route('products.index')
+            ->with('product.delete_status', 'success');
     }
 }
