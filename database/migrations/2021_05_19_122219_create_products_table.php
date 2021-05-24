@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('status_id');
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->text('description');
             $table->string('thumbnail_url')->default(
                 Storage::url('product-images/default.png')
