@@ -29,7 +29,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->paragraphs(asText: true),
             'price' => $this->faker->randomFloat(2, 10, 10000),
             'status_id' => $status->id,
-            'available_count' => $status->name === 'active'
+            'available_count' => $status->name !== 'out-of-stock'
                 ? $this->faker->numberBetween(1, 1000)
                 : 0,
         ];

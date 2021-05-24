@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
 
     Route::resource('products', ProductController::class);
+
+    Route::patch('/products/{product}/upload-thumbnail', [ProductController::class, 'uploadThumbnail'])->name('products.upload-thumbnail');
 });
 
 require __DIR__ . '/auth.php';
