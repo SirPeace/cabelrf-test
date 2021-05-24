@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\ProductStatus;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -17,9 +19,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index', [
-            'products' => Product::paginate(20),
-        ]);
+        $products = Product::paginate(20);
+
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -29,7 +31,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $product_statuses = ProductStatus::all()->toBase();
+
+        return view('products.create', compact('product_statuses'));
     }
 
     /**
@@ -97,6 +101,16 @@ class ProductController extends Controller
             $validator->validate($product->slug);
 
             $product->update(['slug' => urlencode($request->slug)]);
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('public/product-images');
+
+            if (!$path) {
+                throw new Exception('Thumbnail was not stored');
+            }
+
+            $product->update(['thumbnail_path' => $path]);e
         }
 
         return back()->with('status', 'success');

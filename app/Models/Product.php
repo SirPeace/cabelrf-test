@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -17,7 +18,7 @@ class Product extends Model
         'description',
         'status_id',
         'available_count',
-        'thumbnail_url',
+        'thumbnail_path',
         'slug'
     ];
 
@@ -33,5 +34,10 @@ class Product extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(ProductStatus::class);
+    }
+
+    public function getThumbnailUrlAttribute()
+    {
+        return Storage::url($this->thumbnail_path);
     }
 }

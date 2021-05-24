@@ -30,20 +30,29 @@
             </x-delete-product-button>
           </div>
 
-          <div class="flex justify-between">
-            <form action="{{ route('products.update', compact('product')) }}" method="post" class="flex-grow">
-              @csrf
-              @method('PATCH')
+          <form action="{{ route('products.update', compact('product')) }}"
+                method="post"
+                class="flex justify-between"
+                enctype="multipart/form-data">
+            @csrf
+            @method('PATCH')
 
+            <div class="flex-grow">
               <div>
                 <x-label for="product_id" :value="'ID'" />
-                <x-input id="product_id" type="text" class="block mt-1 w-full bg-gray-100" name="product_id"
+                <x-input id="product_id"
+                         name="product_id"
+                         type="text"
+                         class="block mt-1 w-full bg-gray-100"
                          :value="$product->id" required disabled />
               </div>
 
               <div class="mt-4">
                 <x-label for="product_title" :value="__('Title')" />
-                <x-input id="product_title" type="text" class="block mt-1 w-full" name="title"
+                <x-input id="product_title"
+                         name="title"
+                         type="text"
+                         class="block mt-1 w-full"
                          :value="old('title') ? old('title') : $product->title"
                          required />
                 @error('title') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
@@ -51,14 +60,21 @@
 
               <div class="mt-4">
                 <x-label for="product_description" :value="__('Description')" />
-                <x-textarea id="product_description" type="text" class="block mt-1 w-full" name="description"
-                            :value="old('description') ? old('description') : $product->description" required />
+                <x-textarea id="product_description"
+                            name="description"
+                            type="text"
+                            class="block mt-1 w-full"
+                            :value="old('description') ? old('description') : $product->description"
+                            required />
                 @error('description') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
               </div>
 
               <div class="mt-4">
                 <x-label for="product_slug" :value="__('Slug')" />
-                <x-input id="product_slug" type="text" class="block mt-1 w-full" name="slug"
+                <x-input id="product_slug"
+                         type="text"
+                         class="block mt-1 w-full"
+                         name="slug"
                          :value="old('slug') ? old('slug') : $product->slug"
                          required />
                 @error('slug') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
@@ -66,7 +82,10 @@
 
               <div class="mt-4">
                 <x-label for="product_status_id" :value="__('Status')" />
-                <x-select id="product_status_id" type="text" class="block mt-1 w-full" name="status_id"
+                <x-select id="product_status_id"
+                          type="text"
+                          class="block mt-1 w-full"
+                          name="status_id"
                           :value="old('status_id') ? old('status_id') : $product->status_id">
                   @foreach ($product_statuses as $status)
                     <option value="{{ $status->id }}"
@@ -86,7 +105,10 @@
                       $
                     </span>
                   </div>
-                  <x-input id="product_price" type="text" class="block mt-1 w-full pl-6" name="price"
+                  <x-input id="product_price"
+                           type="text"
+                           class="block mt-1 w-full pl-6"
+                           name="price"
                            :value="old('price') ? old('price') : $product->price" required />
                 </div>
                 @error('price') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
@@ -94,27 +116,28 @@
 
               <div class="mt-4">
                 <x-label for="product_available_count" :value="__('Available count')" class="" />
-                <x-input id="product_available_count" type="number" class="block mt-1 w-full" name="available_count"
+                <x-input id="product_available_count"
+                         type="number"
+                         class="block mt-1 w-full"
+                         name="available_count"
                          :value="old('available_count') ? old('available_count') : $product->available_count"
                          required />
                 @error('available_count') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
               </div>
 
               <x-button type="submit" class="mt-4">Update product</x-button>
-            </form>
+            </div>
 
             <div class="w-72 ml-8 mr-4">
-              <div>
+              <div class="border border-gray-200 rounded mb-7">
                 <img src="{{ $product->thumbnail_url }}" alt="{{ "Product #{$product->id} thumbnail" }}">
               </div>
-              <form action="{{ route('products.upload-thumbnail', compact('product')) }}"
-                    class="dropzone bg-gray-50 rounded border border-gray-300" id="products-upload-thumbnail"
-                    enctype="multipart/form-data">
-                @csrf
-                @method('PATCH')
-              </form>
+              <div>
+                <x-label for="file-uploader" :value="__('Upload thumbnail')" />
+                <x-file-uploader id="file-uploader" name="thumbnail" />
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

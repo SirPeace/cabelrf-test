@@ -20,9 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->string('thumbnail_url')->default(
-                Storage::url('product-images/default.png')
-            );
+            $table->string('thumbnail_path')->default('public/product-images/default.png');
             $table->unsignedFloat('price');
             $table->unsignedInteger('available_count');
             $table->timestamp('last_status_change')->default(now());
