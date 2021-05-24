@@ -35,10 +35,6 @@
               @csrf
               @method('PATCH')
 
-              {{-- @if (!empty($errors->all()))
-                {!! dd($errors->all()) !!}
-              @endif --}}
-
               <div>
                 <x-label for="product_id" :value="'ID'" />
                 <x-input id="product_id" type="text" class="block mt-1 w-full bg-gray-100" name="product_id"
