@@ -1,7 +1,7 @@
-@props(['product', 'class'])
+@props(['user', 'class'])
 
 <form
-  action="{{ route('products.destroy', ['product' => $product]) }}"
+  action="{{ route('users.destroy', ['user' => $user]) }}"
   method="POST"
   class="inline-block"
 >
@@ -13,7 +13,7 @@
     type="button"
     title="{{ __('Delete') }}"
     onclick='
-      if (confirm("{{ __("Delete product #{$product->id}?") }}")) {
+      if (confirm("{{ __("Delete user #{$user->id}?") }}")) {
         this.closest("form").submit()
       }'
   >

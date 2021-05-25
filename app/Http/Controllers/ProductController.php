@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\UnsupportedThumbnailType;
+use App\Exceptions\UnsupportedFileTypeException;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\ProductStatus;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
-use App\ProductRepository;
-use Illuminate\Http\UploadedFile;
-use App\ThumbnailManager;
+use App\ProductThumbnailManager;
+use App\Repositories\ProductRepository;
 use Illuminate\Support\Arr;
 
 class ProductController extends Controller
@@ -23,7 +21,7 @@ class ProductController extends Controller
      */
     public function index(ProductRepository $productRepository)
     {
-        $products = $productRepository->getPaginatedSortableProducts(20);
+        $products = $productRepository->indexProducts(20);
 
         return view('products.index', compact('products'));
     }
@@ -35,6 +33,8 @@ class ProductController extends Controller
      */
     public function create()
     {
+        $this->authorize('manage-products');
+
         $product_statuses = ProductStatus::all()->toBase();
 
         return view('products.create', compact('product_statuses'));
@@ -48,6 +48,8 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
+        $this->authorize('manage-products');
+
         $fields = $request->only([
             'title',
             'description',
@@ -58,11 +60,11 @@ class ProductController extends Controller
 
         // Upload thumbnail
         if ($request->hasFile('thumbnail')) {
-            $thumbnailManager = new ThumbnailManager();
+            $thumbnailManager = new ProductThumbnailManager();
 
             try {
                 $path = $thumbnailManager->store($request->file('thumbnail'));
-            } catch (UnsupportedThumbnailType $e) {
+            } catch (UnsupportedFileTypeException $e) {
                 return back()->withInput()->withErrors([
                     'thumbnail' => $e->getMessage()
                 ]);
@@ -106,6 +108,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $this->authorize('manage-products');
+
         $product_statuses = ProductStatus::all()->toBase();
 
         return view('products.edit', compact('product', 'product_statuses'));
@@ -120,6 +124,8 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
+        $this->authorize('manage-products');
+
         $product->update($request->all([
             'title',
             'price',
@@ -141,11 +147,11 @@ class ProductController extends Controller
         }
 
         if ($request->hasFile('thumbnail')) {
-            $thumbnailManager = new ThumbnailManager();
+            $thumbnailManager = new ProductThumbnailManager();
 
             try {
                 $path = $thumbnailManager->update($request->file('thumbnail'), $product->thumbnail_path);
-            } catch (UnsupportedThumbnailType $e) {
+            } catch (UnsupportedFileTypeException $e) {
                 return back()->withInput()->withErrors([
                     'thumbnail' => $e->getMessage()
                 ]);
@@ -163,9 +169,11 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product, ThumbnailManager $thumbnailManager)
+    public function destroy(Product $product, ProductThumbnailManager $thumbnailManager)
     {
-        $thumbnailManager->deleteThumbnail($product->thumbnail_path);
+        $this->authorize('manage-products');
+
+        $thumbnailManager->delete($product->thumbnail_path);
 
         $product->delete();
 
@@ -180,8 +188,10 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function destroyMultiple(Request $request, ThumbnailManager $thumbnailManager)
+    public function destroyMultiple(Request $request, ProductThumbnailManager $thumbnailManager)
     {
+        $this->authorize('manage-products');
+
         $fields = Arr::where(
             $request->all(),
             fn ($value, $key) => str_starts_with($key, 'product-id') && $value === "on"
@@ -195,7 +205,7 @@ class ProductController extends Controller
         $products = Product::whereIn('id', $productIds)->get();
 
         foreach ($products as $product) {
-            $thumbnailManager->deleteThumbnail($product->thumbnail_path);
+            $thumbnailManager->delete($product->thumbnail_path);
 
             $product->delete();
         }

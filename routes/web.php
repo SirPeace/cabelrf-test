@@ -20,13 +20,16 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::resource('users', UserController::class);
+    Route::delete('users/destroy-multiple', [UserController::class, 'destroyMultiple'])
+        ->name('users.destroy-multiple');
+
+    Route::delete('products/destroy-multiple', [ProductController::class, 'destroyMultiple'])
+        ->name('products.destroy-multiple');
+
+    Route::resource('users', UserController::class)->except(['store', 'create']);
 
     Route::resource('products', ProductController::class)
         ->scoped(['product' => 'slug']);
-
-    Route::delete('delete-multiple', [ProductController::class, 'destroyMultiple'])
-        ->name('products.destroy-multiple');
 });
 
 require __DIR__ . '/auth.php';

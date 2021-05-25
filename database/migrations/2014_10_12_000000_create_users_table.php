@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('role_id');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('avatar_path')->default('public/avatars/default.jpg');
             $table->unsignedSmallInteger('age');
             $table->char('sex', 1);
             $table->timestamp('email_verified_at')->nullable();
