@@ -105,6 +105,7 @@
               <div>
                 <x-label for="file-uploader" :value="__('Upload thumbnail')" />
                 <x-file-uploader id="file-uploader" name="thumbnail" />
+                @error('thumbnail') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
               </div>
             </div>
           </form>
