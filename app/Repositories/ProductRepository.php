@@ -1,19 +1,19 @@
 <?php
 
-namespace App;
+namespace App\Repositories;
 
 use App\Models\Product;
-use Illuminate\Support\Collection;
 
 class ProductRepository
 {
     /**
-     * Get products paginator which is sortable via query string
+     * Get products for index page
+     * (searchable, sortable, paginated)
      *
      * @param int $paginate
      * @return \Illuminate\Pagination\Paginator
      */
-    public function getPaginatedSortableProducts(int $paginate)
+    public function indexProducts(int $paginate)
     {
         $orderBy = request('orderBy') ?? null;
         $order = request('order') ?? null;
