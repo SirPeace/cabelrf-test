@@ -21,6 +21,7 @@
         "tailwindcss": "^2.0.2"
     },
     "dependencies": {
-        "filesize": "^6.3.0"
+        "filesize": "^6.3.0",
+        "url-parse": "^1.5.1"
     }
 }
