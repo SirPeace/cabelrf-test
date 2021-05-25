@@ -2,63 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
+use App\Exceptions\UnsupportedThumbnailType;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\ProductStatus;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\ProductRepository;
+use Illuminate\Http\UploadedFile;
+use App\ThumbnailManager;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *e
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ProductRepository $productRepository)
     {
-        $params = $request->only(['orderBy', 'order']);
-
-        $params['order'] = $params['order'] ?? null;
-        $params['orderBy'] = $params['orderBy'] ?? null;
-
-        ['orderBy' => $orderBy, 'order' => $order] = $params;
-
-        $products = Product::with(['status'])
-            ->when(
-                $orderBy,
-                function ($query) use ($orderBy, $order) {
-                    if ($orderBy === 'id') {
-                        return $order === 'desc'
-                            ? $query->orderByDesc('id')
-                            : $query->orderBy('id');
-                    }
-                    if ($orderBy === 'status') {
-                        return $order === 'desc'
-                            ? $query->orderByDesc('status_id')
-                            : $query->orderBy('status_id');
-                    }
-                    if ($orderBy === 'title') {
-                        return $order === 'desc'
-                            ? $query->orderByDesc('title')
-                            : $query->orderBy('title');
-                    }
-                    if ($orderBy === 'price') {
-                        return $order === 'desc'
-                            ? $query->orderByDesc('price')
-                            : $query->orderBy('price');
-                    }
-                    if ($orderBy === 'available_count') {
-                        return $order === 'desc'
-                            ? $query->orderByDesc('available_count')
-                            : $query->orderBy('available_count');
-                    }
-                    return $query->orderByDesc('id');
-                }
-            )
-            ->paginate(20);
+        $products = $productRepository->getPaginatedSortableProducts(20);
 
         return view('products.index', compact('products'));
     }
@@ -83,7 +47,7 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        $fields = $request->all([
+        $fields = $request->only([
             'title',
             'description',
             'price',
@@ -91,13 +55,23 @@ class ProductController extends Controller
             'available_count',
         ]);
 
+        // Upload thumbnail
         if ($request->hasFile('thumbnail')) {
-            $fields['thumbnail_path'] = $request
-                ->file('thumbnail')
-                ->store('public/product-images');
+            $thumbnailManager = new ThumbnailManager();
+
+            try {
+                $path = $thumbnailManager->store($request->file('thumbnail'));
+            } catch (UnsupportedThumbnailType $e) {
+                return back()->withInput()->withErrors([
+                    'thumbnail' => $e->getMessage()
+                ]);
+            }
+
+            $fields['thumbnail_path'] = $path;
         }
 
-        if ($request->slug) {
+        // Create slug
+        if ($request->filled('slug')) {
             $request->validate([
                 'slug' => 'unique:App\Models\Product,slug'
             ]);
@@ -105,11 +79,7 @@ class ProductController extends Controller
             $fields['slug'] = urlencode($request->slug);
         }
 
-        $isCreated = Product::create($fields);
-
-        if (!$isCreated) {
-            throw new \Exception('Product was not created');
-        }
+        Product::create($fields);
 
         return redirect()
             ->route('products.index')
@@ -124,7 +94,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -170,14 +140,14 @@ class ProductController extends Controller
         }
 
         if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('public/product-images');
+            $thumbnailManager = new ThumbnailManager();
 
-            if (!$path) {
-                throw new Exception('Thumbnail was not stored');
-            }
-
-            if ($product->thumbnail_path !== 'public/product-images/default.png') {
-                Storage::delete($product->thumbnail_path);
+            try {
+                $path = $thumbnailManager->update($request->file('thumbnail'), $product->thumbnail_path);
+            } catch (UnsupportedThumbnailType $e) {
+                return back()->withInput()->withErrors([
+                    'thumbnail' => $e->getMessage()
+                ]);
             }
 
             $product->update(['thumbnail_path' => $path]);
@@ -192,11 +162,9 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product, ThumbnailManager $thumbnailManager)
     {
-        if ($product->thumbnail_path !== 'public/product-images/default.png') {
-            Storage::delete($product->thumbnail_path);
-        }
+        $thumbnailManager->deleteThumbnail($product->thumbnail_path);
 
         $product->delete();
 
