@@ -37,7 +37,7 @@
             @csrf
             @method('PATCH')
 
-            <div class="flex-grow">
+            <div class="flex-grow min-w-max">
               <div>
                 <x-label for="product_id" :value="'ID'" />
                 <x-input id="product_id"
@@ -128,13 +128,14 @@
               <x-button type="submit" class="mt-4">Update product</x-button>
             </div>
 
-            <div class="w-72 ml-8 mr-4">
+            <div class="max-w-xs ml-8 mr-4">
               <div class="border border-gray-200 rounded mb-7">
                 <img src="{{ $product->thumbnail_url }}" alt="{{ "Product #{$product->id} thumbnail" }}">
               </div>
               <div>
                 <x-label for="file-uploader" :value="__('Upload thumbnail')" />
                 <x-file-uploader id="file-uploader" name="thumbnail" />
+                @error('thumbnail') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
               </div>
             </div>
           </form>
