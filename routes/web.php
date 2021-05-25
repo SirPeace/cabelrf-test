@@ -24,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('products', ProductController::class)
         ->scoped(['product' => 'slug']);
+
+    Route::delete('delete-multiple', [ProductController::class, 'destroyMultiple'])
+        ->name('products.destroy-multiple');
 });
 
 require __DIR__ . '/auth.php';

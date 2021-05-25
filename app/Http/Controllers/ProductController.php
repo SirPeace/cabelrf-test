@@ -12,6 +12,7 @@ use App\Http\Requests\ProductUpdateRequest;
 use App\ProductRepository;
 use Illuminate\Http\UploadedFile;
 use App\ThumbnailManager;
+use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
@@ -171,5 +172,36 @@ class ProductController extends Controller
         return redirect()
             ->route('products.index')
             ->with('product.delete_status', 'success');
+    }
+
+    /**
+     * Remove the specified resources from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyMultiple(Request $request, ThumbnailManager $thumbnailManager)
+    {
+        $fields = Arr::where(
+            $request->all(),
+            fn ($value, $key) => str_starts_with($key, 'product-id') && $value === "on"
+        );
+
+        $productIds = array_map(
+            fn ($field) => explode(':', $field, 2)[1],
+            array_keys($fields)
+        );
+
+        $products = Product::whereIn('id', $productIds)->get();
+
+        foreach ($products as $product) {
+            $thumbnailManager->deleteThumbnail($product->thumbnail_path);
+
+            $product->delete();
+        }
+
+        return redirect()
+            ->route('products.index')
+            ->with('product.multiple_delete_status', 'success');
     }
 }
