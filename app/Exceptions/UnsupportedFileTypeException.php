@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 
-class UnsupportedThumbnailType extends Exception
+class UnsupportedFileTypeException extends Exception
 {
     //
 }
