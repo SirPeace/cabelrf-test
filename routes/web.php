@@ -16,9 +16,7 @@ use App\Http\Controllers\ProductController;
 */
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::permanentRedirect('/', '/products');
 
     Route::delete('users/destroy-multiple', [UserController::class, 'destroyMultiple'])
         ->name('users.destroy-multiple');
