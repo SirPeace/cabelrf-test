@@ -30,9 +30,7 @@ $ ./vendor/bin/sail up -d
 
 Создать базу данных с тем же именем, что указано в **.env**
 ```
-$ docker exec -it cabelrf-test_mysql_1 bash
-# mysql -u root -p
-Enter password: (password)
+$ docker exec -it cabelrf-test_mysql_1 mysql
 
 mysql> CREATE DATABASE {database_name};
 ```
