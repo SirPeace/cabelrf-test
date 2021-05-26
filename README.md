@@ -28,9 +28,11 @@ FORWARD_DB_PORT={your_db_port}
 $ ./vendor/bin/sail up -d
 ```
 
+Запустить mysql утилиту как пользователь **DB_USERNAME** с паролем **DB_PASSWORD**
 Создать базу данных с тем же именем, что указано в **.env**
 ```
-$ docker exec -it cabelrf-test_mysql_1 mysql
+$ docker exec -it cabelrf-test_mysql_1 mysql -u sail
+Enter password: (password)
 
 mysql> CREATE DATABASE {database_name};
 ```
