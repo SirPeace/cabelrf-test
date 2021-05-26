@@ -25,14 +25,14 @@ FORWARD_DB_PORT={your_db_port}
 
 Запустить docker контейнеры на указанных в **.env** портах, используя утилиту Laravel Sail
 ```
-$ ./vendor/bin/sail up
+$ ./vendor/bin/sail up -d
 ```
 
 Создать базу данных с тем же именем, что указано в **.env**
 ```
 $ docker exec -it cabelrf-test_mysql_1 bash
 # mysql -u root -p
-Enter password: {database_password}
+Enter password: (password)
 
 mysql> CREATE DATABASE {database_name};
 ```
