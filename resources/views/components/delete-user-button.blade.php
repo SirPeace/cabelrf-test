@@ -5,7 +5,7 @@
         title="{{ __('Delete') }}"
         onclick='
             // TODO Bad solution, try to create different form
-            if (confirm("{{ __("Delete product #{$product->id}?") }}")) {
+            if (confirm("{{ __("Delete user") . " #{$user->id}?" }}")) {
                 let checkbox = this.closest("tr").querySelector(`input[type="checkbox"]`);
                 checkbox.checked = true;
 

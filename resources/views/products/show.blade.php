@@ -35,7 +35,7 @@
 
               <div class="mt-4">
                 <span class="font-bold text-lg underline">{{ __('Status') }}</span>
-                <p>{{ $product->status->alias }}</p>
+                <p>{{ __($product->status->alias) }}</p>
               </div>
 
               <div class="mt-4">

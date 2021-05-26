@@ -90,7 +90,7 @@
                   @foreach ($product_statuses as $status)
                     <option value="{{ $status->id }}"
                             @if ($product->status->id == $status->id) selected @endif>
-                      {{ $status->alias }}
+                      {{ __($status->alias) }}
                     </option>
                   @endforeach
                 </x-select>
@@ -125,7 +125,7 @@
                 @error('available_count') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
               </div>
 
-              <x-button type="submit" class="mt-4">Update product</x-button>
+              <x-button type="submit" class="mt-4">{{ __('Update product') }}</x-button>
             </div>
 
             <div class="max-w-xs ml-8 mr-4">

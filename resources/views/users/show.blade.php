@@ -25,7 +25,7 @@
 
               <div class="mt-4">
                 <span class="font-bold text-lg underline">{{ __('Role') }}</span>
-                <p>{{ $user->role->alias }}</p>
+                <p>{{ __($user->role->alias) }}</p>
               </div>
 
               <div class="mt-4">
@@ -35,7 +35,7 @@
 
               <div class="mt-4">
                 <span class="font-bold text-lg underline">{{ __('Sex') }}</span>
-                <p>{{ $user->sex }}</p>
+                <p>{{ __($user->sex) }}</p>
               </div>
             </div>
 

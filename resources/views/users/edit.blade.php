@@ -78,7 +78,7 @@
                   @foreach ([ ['F', 'Female'], ['M', 'Male'] ] as $sex)
                     <option value="{{ $sex[0] }}"
                             @if ($user->sex == $sex[0]) selected @endif>
-                      {{ $sex[1] }}
+                      {{ __($sex[1]) }}
                     </option>
                   @endforeach
                 </x-select>
@@ -95,7 +95,7 @@
                   @foreach ($user_roles as $role)
                     <option value="{{ $role->id }}"
                             @if ($user->role->id == $role->id) selected @endif>
-                      {{ $role->alias }}
+                      {{ __($role->alias) }}
                     </option>
                   @endforeach
                 </x-select>
