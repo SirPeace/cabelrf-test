@@ -204,6 +204,11 @@ class ProductController extends Controller
 
         $products = Product::whereIn('id', $productIds)->get();
 
+        // TODO Bad solution (delete-product-button)
+        if ($products->count() === 1) {
+            return $this->destroy($products->first(), $thumbnailManager);
+        }
+
         foreach ($products as $product) {
             $thumbnailManager->delete($product->thumbnail_path);
 

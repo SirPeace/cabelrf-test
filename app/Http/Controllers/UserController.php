@@ -127,6 +127,11 @@ class UserController extends Controller
 
         $users = User::whereIn('id', $userIds)->get();
 
+        // TODO Bad solution (delete-user-button)
+        if ($users->count() === 1) {
+            return $this->destroy($users->first(), $avatarManager);
+        }
+
         foreach ($users as $user) {
             $avatarManager->delete($user->avatar_path);
 
