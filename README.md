@@ -52,6 +52,6 @@ $ ./vendor/bin/sail artisan storage:link
 $ ./vendor/bin/sail artisan migrate --seed
 ```
 
-По умолчанию зарегистрирован администратор:
-email: admin@example.com
+По умолчанию зарегистрирован администратор:\
+email: admin@example.com\
 пароль: admin 
