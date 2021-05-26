@@ -17,11 +17,11 @@ class DatabaseSeeder extends Seeder
         (new RoleSeeder)->run();
 
         \App\Models\User::factory()->create([
-            'name' => 'Roman Khabibulin',
-            'email' => 'roman.khabibulin12@gmail.com',
+            'name' => 'Rasmus Lerdorf',
+            'email' => 'admin@example.com',
             'password' => Hash::make('admin'),
             'role_id' => \App\Models\Role::where('name', 'admin')->first()->id,
-            'age' => 18,
+            'age' => 52,
             'sex' => 'M'
         ]);
 
