@@ -26,6 +26,7 @@
             <div class="flex items-center">
               <div class="space-x-1">
                 <button x-show="selected > 0"
+                        x-cloak
                         class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white inline-flex items-center"
                         @click="document.forms['users.destroy-multiple'].submit()">
                   <svg class="h-5 w-5 relative right-2" viewBox="0 0 20 20" fill="currentColor">
